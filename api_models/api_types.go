@@ -3,8 +3,9 @@ package api_models
 import "time"
 
 type QuotePriceResponse struct {
-	Quotes []QuotePrice
-	Rank   int
+	Quotes          []QuotePrice
+	RankNumerator   int
+	RankDenominator int
 }
 
 type QuotePrice struct {

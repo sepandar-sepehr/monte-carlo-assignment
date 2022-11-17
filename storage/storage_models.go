@@ -15,6 +15,7 @@ type QuotePrice struct {
 }
 
 type QuoteRank struct {
+	gorm.Model
 	Exchange        string
 	FromSymbol      string
 	ToSymbol        string

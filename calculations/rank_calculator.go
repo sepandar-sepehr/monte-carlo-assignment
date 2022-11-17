@@ -14,7 +14,8 @@ type RankCalculator struct {
 	quoteRankRepository  storage.QuoteRankRepository
 }
 
-func NewRankCalculator(log *zap.Logger, quotePriceRepository storage.QuotePriceRepository, quoteRankRepository storage.QuoteRankRepository) *RankCalculator {
+func NewRankCalculator(log *zap.Logger, quotePriceRepository storage.QuotePriceRepository,
+	quoteRankRepository storage.QuoteRankRepository) *RankCalculator {
 	return &RankCalculator{
 		log,
 		quotePriceRepository,

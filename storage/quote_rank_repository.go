@@ -27,11 +27,12 @@ func (r *QuoteRankRepository) StoreRank(quoteRank QuoteRank) {
 func (r *QuoteRankRepository) GetLatestRank(quotePrice QuotePrice) (*QuoteRank, error) {
 	minus5mTime := quotePrice.FetchedAt.Add(-time.Minute * 5)
 	var quoteRank QuoteRank
-	result := r.db.Where("calculated_at >= ? AND calculated_at < ?AND from_symbol = ? AND to_symbol = ? AND exchange = ?",
+	result := r.db.Where("calculated_at >= ? AND calculated_at < ? AND from_symbol = ? AND to_symbol = ? AND exchange = ?",
 		minus5mTime, quotePrice.FetchedAt, quotePrice.FromSymbol, quotePrice.ToSymbol, quotePrice.Exchange).
 		Order("calculated_at desc").
 		First(&quoteRank)
 	if result.Error != nil {
+		r.log.Error(result.Error.Error())
 		return nil, errors.New("failed to fetch data")
 	}
 

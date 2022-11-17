@@ -67,7 +67,7 @@ func main() {
 
 	// Setting up API handlers
 	http.HandleFunc("/observability", renderPage)
-	quotePriceHandler := handlers.NewQuotePriceHandler(quotePriceRepo, logger)
+	quotePriceHandler := handlers.NewQuotePriceHandler(logger, quotePriceRepo, quoteRankRepo)
 	http.HandleFunc(handlers.QuotePricePath, quotePriceHandler.ServeRequest)
 
 	log.Fatal(http.ListenAndServe(":8080", nil))
