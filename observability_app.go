@@ -7,6 +7,7 @@ import (
 	"go.uber.org/zap/zapcore"
 	"html/template"
 	"log"
+	"monte-carlo-assignment/handlers"
 	"monte-carlo-assignment/ingestion"
 	"monte-carlo-assignment/market_data"
 	"monte-carlo-assignment/storage"
@@ -61,8 +62,11 @@ func main() {
 	logger.Info("Start cron")
 	c.Start()
 
-	// Setting up web handler
+	// Setting up API handlers
 	http.HandleFunc("/observability", renderPage)
+	quotePriceHandler := handlers.NewQuotePriceHandler(quotePriceRepo, logger)
+	http.HandleFunc(handlers.QuotePricePath, quotePriceHandler.ServeRequest)
+
 	log.Fatal(http.ListenAndServe(":8080", nil))
 }
 

@@ -4,6 +4,7 @@ import (
 	"go.uber.org/zap"
 	"monte-carlo-assignment/market_data"
 	"monte-carlo-assignment/storage"
+	"monte-carlo-assignment/storage/models"
 	"time"
 )
 
@@ -48,5 +49,12 @@ func (f *QuotePriceFetcher) FetchQuotePrice() {
 		zap.String("toSymbol", toSymbol),
 	)
 
-	f.quotePriceRepository.StorePrice(exchange, fromSymbol, toSymbol, getQuoteOutput.Price, time.Now())
+	quotePrice := models.QuotePrice{
+		Exchange:   exchange,
+		FromSymbol: fromSymbol,
+		ToSymbol:   toSymbol,
+		Price:      getQuoteOutput.Price,
+		FetchedAt:  time.Now(),
+	}
+	f.quotePriceRepository.StorePrice(quotePrice)
 }
