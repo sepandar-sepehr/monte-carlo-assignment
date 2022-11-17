@@ -8,6 +8,7 @@ import (
 	"html/template"
 	"log"
 	"monte-carlo-assignment/ingestion"
+	"monte-carlo-assignment/market_data"
 	"monte-carlo-assignment/models"
 	"net/http"
 	"os"
@@ -46,7 +47,8 @@ func main() {
 	db.AutoMigrate(&models.QuotePrice{})
 
 	// Setting up ingestion
-	quotePriceFetcher := ingestion.NewQuotePriceFetcher(logger)
+	ingestionClient := market_data.NewCryptowatClient(logger)
+	quotePriceFetcher := ingestion.NewQuotePriceFetcher(logger, ingestionClient)
 
 	// Setting cron job
 	logger.Info("Create new cron")
