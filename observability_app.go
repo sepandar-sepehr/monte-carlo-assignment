@@ -7,11 +7,11 @@ import (
 	"go.uber.org/zap/zapcore"
 	"html/template"
 	"log"
+	"monte-carlo-assignment/calculations"
 	"monte-carlo-assignment/handlers"
 	"monte-carlo-assignment/ingestion"
 	"monte-carlo-assignment/market_data"
 	"monte-carlo-assignment/storage"
-	"monte-carlo-assignment/storage/models"
 	"net/http"
 	"os"
 	"time"
@@ -46,17 +46,20 @@ func main() {
 	if err != nil {
 		panic("failed to connect database")
 	}
-	db.AutoMigrate(&models.QuotePrice{})
+	db.AutoMigrate(&storage.QuotePrice{}, &storage.QuoteRank{})
 
 	// Setting up ingestion
 	ingestionClient := market_data.NewCryptowatClient(logger)
 	quotePriceRepo := storage.NewQuotePriceRepository(logger, db)
+	quoteRankRepo := storage.NewQuoteRankRepository(logger, db)
 	quotePriceFetcher := ingestion.NewQuotePriceFetcher(logger, ingestionClient, quotePriceRepo)
+	rankCalculator := calculations.NewRankCalculator(logger, quotePriceRepo, quoteRankRepo)
 
 	// Setting cron job
 	logger.Info("Create new cron")
 	c := cron.New()
 	c.AddFunc("*/1 * * * *", quotePriceFetcher.FetchQuotePrice)
+	c.AddFunc("*/1 * * * *", rankCalculator.CalculateRanks)
 
 	// Start cron with one scheduled job
 	logger.Info("Start cron")

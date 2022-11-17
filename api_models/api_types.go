@@ -1,9 +1,10 @@
-package api_types
+package api_models
 
 import "time"
 
 type QuotePriceResponse struct {
 	Quotes []QuotePrice
+	Rank   int
 }
 
 type QuotePrice struct {

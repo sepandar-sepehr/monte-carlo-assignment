@@ -3,9 +3,8 @@ package handlers
 import (
 	"encoding/json"
 	"go.uber.org/zap"
-	"monte-carlo-assignment/api_types"
+	"monte-carlo-assignment/api_models"
 	"monte-carlo-assignment/storage"
-	"monte-carlo-assignment/storage/models"
 	"net/http"
 	"time"
 )
@@ -27,7 +26,7 @@ func (h *QuotePriceHandler) ServeRequest(w http.ResponseWriter, r *http.Request)
 
 	w.Header().Set("Content-Type", "application/json")
 	queryParams := r.URL.Query()
-	get24hInput := models.QuotePrice{
+	get24hInput := storage.QuotePrice{
 		Exchange:   queryParams.Get("exchange"),
 		FromSymbol: queryParams.Get("from"),
 		ToSymbol:   queryParams.Get("to"),
@@ -43,10 +42,10 @@ func (h *QuotePriceHandler) ServeRequest(w http.ResponseWriter, r *http.Request)
 	json.NewEncoder(w).Encode(convertResponse(repoResponse))
 }
 
-func convertResponse(repoResponse []models.QuotePrice) *api_types.QuotePriceResponse {
-	convertedPrices := make([]api_types.QuotePrice, len(repoResponse))
+func convertResponse(repoResponse []storage.QuotePrice) *api_models.QuotePriceResponse {
+	convertedPrices := make([]api_models.QuotePrice, len(repoResponse))
 	for i, repoPrice := range repoResponse {
-		convertedPrices[i] = api_types.QuotePrice{
+		convertedPrices[i] = api_models.QuotePrice{
 			Exchange:   repoPrice.Exchange,
 			FromSymbol: repoPrice.FromSymbol,
 			ToSymbol:   repoPrice.ToSymbol,
@@ -54,7 +53,7 @@ func convertResponse(repoResponse []models.QuotePrice) *api_types.QuotePriceResp
 			Time:       repoPrice.FetchedAt,
 		}
 	}
-	return &api_types.QuotePriceResponse{
+	return &api_models.QuotePriceResponse{
 		Quotes: convertedPrices,
 	}
 }

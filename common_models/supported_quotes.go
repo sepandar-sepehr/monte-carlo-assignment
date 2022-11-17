@@ -1,11 +1,13 @@
-package ingestion
+package common_models
 
 type quotePair struct {
 	FromSymbol string
 	ToSymbol   string
 }
 
-var supportedQuotes = []quotePair{
+const SupportedExchange = "coinbase-pro"
+
+var SupportedQuotes = []quotePair{
 	{
 		FromSymbol: "btc",
 		ToSymbol:   "eur",

@@ -2,9 +2,9 @@ package ingestion
 
 import (
 	"go.uber.org/zap"
+	"monte-carlo-assignment/common_models"
 	"monte-carlo-assignment/market_data"
 	"monte-carlo-assignment/storage"
-	"monte-carlo-assignment/storage/models"
 	"time"
 )
 
@@ -27,8 +27,8 @@ func NewQuotePriceFetcher(
 }
 
 func (f *QuotePriceFetcher) FetchQuotePrice() {
-	exchange := "coinbase-pro"
-	for _, quotePair := range supportedQuotes {
+	exchange := common_models.SupportedExchange
+	for _, quotePair := range common_models.SupportedQuotes {
 		fromSymbol := quotePair.FromSymbol
 		toSymbol := quotePair.ToSymbol
 
@@ -51,7 +51,7 @@ func (f *QuotePriceFetcher) FetchQuotePrice() {
 			zap.String("toSymbol", toSymbol),
 		)
 
-		quotePrice := models.QuotePrice{
+		quotePrice := storage.QuotePrice{
 			Exchange:   exchange,
 			FromSymbol: fromSymbol,
 			ToSymbol:   toSymbol,
