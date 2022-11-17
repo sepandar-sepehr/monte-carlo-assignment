@@ -3,19 +3,28 @@ package ingestion
 import (
 	"go.uber.org/zap"
 	"monte-carlo-assignment/market_data"
+	"monte-carlo-assignment/storage"
+	"time"
 )
 
 type QuotePriceFetcher struct {
-	log          *zap.Logger
-	marketClient market_data.Client
+	log                  *zap.Logger
+	marketClient         market_data.Client
+	quotePriceRepository storage.QuotePriceRepository
 }
 
-func NewQuotePriceFetcher(log *zap.Logger, client market_data.Client) *QuotePriceFetcher {
+func NewQuotePriceFetcher(
+	log *zap.Logger,
+	client market_data.Client,
+	quotePriceRepository storage.QuotePriceRepository,
+) *QuotePriceFetcher {
 	return &QuotePriceFetcher{
 		log,
 		client,
+		quotePriceRepository,
 	}
 }
+
 func (f *QuotePriceFetcher) FetchQuotePrice() {
 	exchange := "coinbase-pro"
 	fromSymbol := "btc"
@@ -38,4 +47,6 @@ func (f *QuotePriceFetcher) FetchQuotePrice() {
 		zap.String("fromSymbol", fromSymbol),
 		zap.String("toSymbol", toSymbol),
 	)
+
+	f.quotePriceRepository.StorePrice(exchange, fromSymbol, toSymbol, getQuoteOutput.Price, time.Now())
 }

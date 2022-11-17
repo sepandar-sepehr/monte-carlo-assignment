@@ -9,7 +9,8 @@ import (
 	"log"
 	"monte-carlo-assignment/ingestion"
 	"monte-carlo-assignment/market_data"
-	"monte-carlo-assignment/models"
+	"monte-carlo-assignment/storage"
+	"monte-carlo-assignment/storage/models"
 	"net/http"
 	"os"
 	"time"
@@ -48,7 +49,8 @@ func main() {
 
 	// Setting up ingestion
 	ingestionClient := market_data.NewCryptowatClient(logger)
-	quotePriceFetcher := ingestion.NewQuotePriceFetcher(logger, ingestionClient)
+	quotePriceRepo := storage.NewQuotePriceRepository(logger, db)
+	quotePriceFetcher := ingestion.NewQuotePriceFetcher(logger, ingestionClient, quotePriceRepo)
 
 	// Setting cron job
 	logger.Info("Create new cron")
