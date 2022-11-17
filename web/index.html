@@ -3,8 +3,79 @@
 <head>
     <meta charset="UTF-8">
     <title>Crypto Observability</title>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        let quoteChart
+        function fetchQuotes(quoteSelector) {
+            let fromSymbol;
+            let toSymbol;
+            if (quoteSelector.value === '1') {
+                fromSymbol = "btc";
+                toSymbol = "eur";
+            } else if (quoteSelector.value === '2') {
+                fromSymbol = "bnt";
+                toSymbol = "eur";
+            } else if (quoteSelector.value === '3') {
+                fromSymbol = "eth";
+                toSymbol = "eur";
+            }
+            const url = "http://localhost:8080/market/24h_price?exchange=coinbase-pro&from="
+                + fromSymbol + "&to=" + toSymbol;
+            console.log(url)
+            fetch(url)
+                .then(data => data.json())
+                .then((json) => {
+                    drawChart(document.getElementById("myChart"), json["Quotes"])
+                }).catch(function(){
+                document.getElementById("error_message").innerHTML = "Failed to fetch data. ";
+            });
+            return false;
+        }
+
+        function drawChart(ctx, data) {
+            const prices = data.map(quote => quote["Price"]);
+            const dates = data.map(quote => quote["Time"].substring(0,19));
+            if (quoteChart != null) {
+                quoteChart.destroy()
+            }
+
+            quoteChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: dates,
+                    datasets: [{
+                        label: "Chart of " + data[0]["FromSymbol"] + "-" + data[0]["ToSymbol"] + " in the last 24h",
+                        data: prices,
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+        }
+
+    </script>
 </head>
 <body>
-Graph goes here
+<label for="quotes_selector">Choose a conversion to get historical quotes for: </label>
+<select id="quotes_selector" onchange="fetchQuotes(this)">
+    <option value="1" disabled selected>Select an option</option>
+    <option value="1">BTC to EUR</option>
+    <option value="2">BNT to EUR</option>
+    <option value="3">ETH to EUR</option>
+</select>
+
+<div>
+    <canvas id="myChart"></canvas>
+</div>
+
+<div id="error_message"></div>
+
 </body>
 </html>

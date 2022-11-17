@@ -23,6 +23,8 @@ func NewQuotePriceHandler(quotePriceRepository storage.QuotePriceRepository, log
 }
 
 func (h *QuotePriceHandler) ServeRequest(w http.ResponseWriter, r *http.Request) {
+	h.log.Info("Serving quote price request")
+
 	w.Header().Set("Content-Type", "application/json")
 	queryParams := r.URL.Query()
 	get24hInput := models.QuotePrice{
@@ -41,10 +43,10 @@ func (h *QuotePriceHandler) ServeRequest(w http.ResponseWriter, r *http.Request)
 	json.NewEncoder(w).Encode(convertResponse(repoResponse))
 }
 
-func convertResponse(repoResponse []models.QuotePrice) []api_types.QuotePrice {
-	response := make([]api_types.QuotePrice, len(repoResponse))
+func convertResponse(repoResponse []models.QuotePrice) *api_types.QuotePriceResponse {
+	convertedPrices := make([]api_types.QuotePrice, len(repoResponse))
 	for i, repoPrice := range repoResponse {
-		response[i] = api_types.QuotePrice{
+		convertedPrices[i] = api_types.QuotePrice{
 			Exchange:   repoPrice.Exchange,
 			FromSymbol: repoPrice.FromSymbol,
 			ToSymbol:   repoPrice.ToSymbol,
@@ -52,5 +54,7 @@ func convertResponse(repoResponse []models.QuotePrice) []api_types.QuotePrice {
 			Time:       repoPrice.FetchedAt,
 		}
 	}
-	return response
+	return &api_types.QuotePriceResponse{
+		Quotes: convertedPrices,
+	}
 }
